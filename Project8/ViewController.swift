@@ -16,6 +16,7 @@ class ViewController: UIViewController {
     
     var activatedButtons = [UIButton]()
     var solutions = [String]()
+    var totalAnswered = 0
     
     var score = 0 {
         didSet {
@@ -75,6 +76,8 @@ class ViewController: UIViewController {
         
         let buttonsView = UIView()
         buttonsView.translatesAutoresizingMaskIntoConstraints = false
+        buttonsView.layer.borderColor = UIColor.systemGray4.cgColor
+        buttonsView.layer.borderWidth = 1
         view.addSubview(buttonsView)
         
         NSLayoutConstraint.activate([
@@ -158,12 +161,26 @@ class ViewController: UIViewController {
             
             currentAnswer.text = ""
             score += 1
+            totalAnswered += 1
+            print("Total answered: \(totalAnswered)")
             
-            if score % 7 == 0 {
+            if totalAnswered == solutions.count {
+                totalAnswered = 0
                 let ac = UIAlertController(title: "Well done!", message: "Are you ready for the next level?", preferredStyle: .alert)
                 ac.addAction(UIAlertAction(title: "Let's go!", style: .default, handler: levelUp))
                 present(ac, animated: true)
             }
+        } else {
+            let ac = UIAlertController(title: "Wrong answer!", message: nil, preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            score -= 1
+            currentAnswer.text = ""
+            for button in activatedButtons {
+                button.isHidden = false
+            }
+            activatedButtons.removeAll()
+            
+            present(ac, animated: true, completion: nil)
         }
     }
     
